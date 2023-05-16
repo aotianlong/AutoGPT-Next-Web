@@ -33,6 +33,8 @@ import { useRouter } from "next/router";
 import { useGuestMode } from "../hooks/useGuestMode";
 import { authEnabled } from "../utils/env-helper";
 
+import { sslogin } from '../mbm/login'
+
 const Home: NextPage = () => {
   const { t, i18n } = useTranslation();
   const addMessage = useMessageStore.use.addMessage();
@@ -66,6 +68,20 @@ const Home: NextPage = () => {
 
   const router = useRouter();
   const agentUtils = useAgent();
+
+
+  useEffect(() => {
+    sslogin({
+      isLoggedIn() {
+        return !!settingsModel.settings.customApiKey
+      },
+      handleAccount(account: any) {
+    	  settingsModel.settings.customEndPoint = 'https://openai.yingjin.pro/v1'
+        settingsModel.settings.customApiKey   = account.accessKey
+        settingsModel.saveSettings(settingsModel.settings)
+      }
+    });
+  }, [])
 
   useEffect(() => {
     const key = "agentgpt-modal-opened-new";
